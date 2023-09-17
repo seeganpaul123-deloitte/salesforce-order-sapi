@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="getProductFlow" doc:id="5cf8d0a3-f1d8-4974-b540-72f216b326fe" >
+		<logger level="INFO" doc:name="Logger" doc:id="0490b835-d417-4d87-b8c3-27d4bd631742" message="started executing getProduct flow "/>
+		<salesforce:query doc:name="Query" doc:id="6b340da9-e028-4cb7-abe5-0c7dce874364" config-ref="Salesforce_Config">
+			<salesforce:salesforce-query ><![CDATA[SELECT Id, Name, ProductCode, Description FROM Product2 where Name = ':name']]></salesforce:salesforce-query>
+			<salesforce:parameters ><![CDATA[#[{
+	name: attributes.queryParams.product
+}]]]></salesforce:parameters>
+		</salesforce:query>
+		<ee:transform doc:name="Transform Message" doc:id="b42f852d-0327-48ab-a96c-af5af0d52da1" >
+			<ee:message >
+				<ee:set-payload resource = "dwl/getProduct.dwl" />
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="44456443-d46d-46dd-a5c0-91b336acbe58" message="finished executing getProduct flow " />
+	</flow>
+</mule>

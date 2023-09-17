@@ -1,0 +1,14 @@
+%dw 2.0
+
+type auto_b6a1127d_b8ff_422e_b1cb_990e62c221ed_Output_Payload = Array<OrderItem>
+type OrderItem = {|
+  Id?: String {"typeId": "Id"}, 
+  OrderId?: String, 
+  Product2Id?: String, 
+  Quantity?: Number {"typeId": "Quantity"}, 
+  UnitPrice?: Number {"typeId": "UnitPrice"}
+|} {"label": "Order Product",
+"typeId": "OrderItem"}
+
+
+

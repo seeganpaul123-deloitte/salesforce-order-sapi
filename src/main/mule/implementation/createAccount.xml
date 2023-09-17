@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:azure-service-bus-messaging="http://www.mulesoft.org/schema/mule/azure-service-bus-messaging" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/azure-service-bus-messaging http://www.mulesoft.org/schema/mule/azure-service-bus-messaging/current/mule-azure-service-bus-messaging.xsd">
+	<flow name="createAccountFlow" doc:id="ffbdfa10-8383-4ed3-82aa-c0912215b86f" >
+		<azure-service-bus-messaging:message-listener ackMode="AUTO" destinationName="salesforce-accounts" doc:name="Message listener" doc:id="3bf5d25d-dde8-433e-a1f0-83d364189b51" config-ref="Azure_Service_Bus_Messaging_Connector_Config"/>
+		<logger level="INFO" doc:name="Logger" doc:id="9804ee91-3350-4a60-9b18-e787340dff22" message="started executing createAccount flow"/>
+		<ee:transform doc:name="Transform Message" doc:id="4544a250-c769-4c69-903c-2ddb5b8be190" >
+			<ee:message >
+				<ee:set-payload resource = "dwl/accountRequest.dwl" />
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="username" ><![CDATA[payload.name]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<salesforce:create type="Account" doc:name="Account" doc:id="a3ef6257-57ac-417e-8983-27d0f685da9b" config-ref="Salesforce_Config"/>
+		<ee:transform doc:name="Transform Message" doc:id="54015522-0ca7-44b7-b1f7-4087e6b20350" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<choice doc:name="Choice" doc:id="48c0caa5-3669-4f07-a69f-cf79a7b9e54f" >
+			<when expression="#[payload.successful]">
+				<ee:transform doc:name="Transform Message" doc:id="80cc5709-157a-4d67-a90c-7353f4ca1b95" >
+					<ee:message >
+						<ee:set-payload resource = "dwl/accountResponse.dwl" />
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="user" resource = "dwl/user.dwl" />
+					</ee:variables>
+				</ee:transform>
+				<set-variable value="" doc:name="Set Variable" doc:id="627ecd20-3f1b-491d-9f30-ceedf8f7b7aa" variableName="publish"/>
+				<flow-ref doc:name="publish flow" doc:id="3fca30d4-c533-446a-a3d9-990f65a351b8" name="publishFlow" target="publish"/>
+				<logger level="INFO" doc:name="Logger" doc:id="47676228-fae3-4490-8948-4f267e312df2" message="finished executing createAccount flow"/>
+			</when>
+			<otherwise >
+				<logger level="ERROR" doc:name="Logger" doc:id="df9cb11f-a7a5-4860-8d08-ef3bfc17c059" message="#[payload.items[0].exception.message]"/>
+				<raise-error doc:name="Raise error" doc:id="c1172751-5ee6-4a17-9663-d5bc2a551d09" type="SALESFORCE:EXECPTION" description="#[payload.items[0].exception.message]"/>
+			</otherwise>
+		</choice>
+	</flow>
+</mule>

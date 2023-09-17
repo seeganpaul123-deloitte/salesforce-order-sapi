@@ -1,0 +1,14 @@
+%dw 2.0
+
+type auto_fa682a31_e26d_4c54_9bdb_684d1c4852cd_Output_Payload = Array<PricebookEntry>
+type PricebookEntry = {|
+  Id?: String {"typeId": "Id"}, 
+  Name?: String {"typeId": "Name"}, 
+  Pricebook2Id?: String, 
+  Product2Id?: String, 
+  UnitPrice?: Number {"typeId": "UnitPrice"}
+|} {"label": "Price Book Entry",
+"typeId": "PricebookEntry"}
+
+
+

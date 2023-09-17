@@ -1,0 +1,9 @@
+sf:
+  username: "![ZTg89vWPPkbG5XWEZ5MbU28fXqjY3CX+]"
+  password: "![j5WPzZpxukphYiy7Smn1Rg==]"
+  securityToken: "![V0OP4gSjm6ANF5cxcKEGSghXA6r+z/i1xpfjagMg6Bk=]"
+
+azure:
+  namespace: "![a8D+hR6Rlo84NnUDptgiF8sRdW9kETcP]"
+  accesskey: "![HJPkWfEC3/G7F3S9R6I55vQGdWJ0owGtsrQhZwl9cBo=]"
+  sas: "![8MJRST1wSZFIuefWHEMJqqQy+mcmT9rJIV4VcFXH/xVIBn0m6VefyIJ1hP9RAJXw]"

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="createOrderFlow" doc:id="4da25cdb-fe04-4e06-89f6-5726bd0858d0" >
+		<logger level="INFO" doc:name="Logger" doc:id="1b39bb62-6589-4800-9c18-f0fae4e854c5" message="started executing createOrder flow"/>
+		<set-variable value="#[payload]" doc:name="original Payload" doc:id="9b095b1d-4fb1-4a3c-941a-7cd10e93d574" variableName="originalPayload"/>
+		<ee:transform doc:name="Transform Message" doc:id="764e83eb-2ce5-4ab0-8f3f-fde8ebb4aa1f" >
+			<ee:message >
+				<ee:set-payload resource = "dwl/orderRequest.dwl" />
+			</ee:message>
+		</ee:transform>
+		<salesforce:create type="Order" doc:name="Order" doc:id="09416a6d-8572-4842-9410-af5762c3fde2" config-ref="Salesforce_Config"/>
+		<ee:transform doc:name="Transform Message" doc:id="11a63c9e-b0b4-4bd5-9723-fda2f5dd9173" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<choice doc:name="Choice" doc:id="7e010660-a3af-46ba-bbdb-cc97c1d0687c" >
+			<when expression="#[payload.successful]">
+				<ee:transform doc:name="Transform Message" doc:id="16f21292-ef01-4b0b-8b7b-3be20dfe0224">
+					<ee:message>
+						<ee:set-payload resource = "dwl/orderProductRequest.dwl" />
+					</ee:message>
+				</ee:transform>
+				<salesforce:create type="OrderItem" doc:name="Order Product" doc:id="2ffeb766-1638-4882-9532-c25633a7f481" config-ref="Salesforce_Config"/>
+				<ee:transform doc:name="Transform Message" doc:id="6630b3db-fb26-4578-92cc-6a4f08fede02" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<choice doc:name="Choice" doc:id="3d278852-b5e2-46b1-b3ed-a261c2cb1d1d" >
+					<when expression="#[payload.successful]">
+						<ee:transform doc:name="Transform Message" doc:id="cf205583-be08-4288-9fb5-24386ffffec0" >
+							<ee:message >
+								<ee:set-payload resource = "dwl/orderResponse.dwl" />
+							</ee:message>
+						</ee:transform>
+						<logger level="INFO" doc:name="Logger" doc:id="f874bdde-4000-431e-ab37-2b229fa1abf7" message="finished executing createOrder flow" />
+					</when>
+					<otherwise >
+						<logger level="ERROR" doc:name="Logger" doc:id="a0b6ab81-7116-4ceb-b533-d1c8b307c3fe" message="#[payload.items[0].exception.message]"/>
+						<raise-error doc:name="Raise error" doc:id="ed19f824-560c-4760-ba37-843c4deff226" description="#[payload.items[0].exception.message]" type="SALESFORCE:EXECPTION"/>
+					</otherwise>
+				</choice>
+			</when>
+			<otherwise >
+				<logger level="ERROR" doc:name="Logger" doc:id="583e914d-6aca-4f9e-a1cf-7811da75498a" message="#[payload.items[0].exception.message]"/>
+				<raise-error doc:name="Raise error" doc:id="6428bdd6-81b0-412d-99d8-257579c30ff2" type="SALESFORCE:EXECPTION" description="#[payload.items[0].exception.message]" />
+			</otherwise>
+		</choice>
+	</flow>
+</mule>

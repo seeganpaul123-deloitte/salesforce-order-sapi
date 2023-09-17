@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="getOrderFlow" doc:id="936dd4e7-c0e1-487a-9649-f95540f0904f" >
+		<logger level="INFO" doc:name="Logger" doc:id="543a1a50-7df9-4dcb-af28-09e9a1ef4a5f" message="started executing getOrder flow"/>
+		<salesforce:query doc:name="Query" doc:id="0948f5a5-cbfe-4911-b37b-c2a783a1058e" config-ref="Salesforce_Config">
+			<salesforce:salesforce-query ><![CDATA[SELECT Id, AccountId, Pricebook2Id, EffectiveDate, EndDate, Status, BillingStreet, BillingCity, BillingState, BillingCountry, TotalAmount FROM Order WHERE AccountId = ':accountId']]></salesforce:salesforce-query>
+			<salesforce:parameters ><![CDATA[#[{
+	accountId: attributes.uriParams.accountId
+}]]]></salesforce:parameters>
+		</salesforce:query>
+		<logger level="INFO" doc:name="Logger" doc:id="6ec4dfe6-c10c-4742-9e65-5ad302e9876d" message="#[output application/json --- payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="16e82509-49d0-4e5e-aab3-5e349fa03c0e" >
+			<ee:message >
+				<ee:set-payload resource = "dwl/getOrder.dwl" />
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="5fc40539-d480-43b3-8fd8-a22cd0edc1bc" message="finished executing getOrder flow"/>
+	</flow>
+</mule>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="getPricebookEntryFlow" doc:id="fa682a31-e26d-4c54-9bdb-684d1c4852cd" >
+		<logger level="INFO" doc:name="Logger" doc:id="2bf3b00e-3928-49a7-910d-3c29ae881140" message="started executing getPricebookEntry flow "/>
+		<salesforce:query doc:name="Query" doc:id="02c6d5e1-c780-486d-9195-4dd5685c1c9f" config-ref="Salesforce_Config">
+			<salesforce:salesforce-query ><![CDATA[SELECT Id, Name, Pricebook2Id, Product2Id, UnitPrice FROM PricebookEntry where Product2ID = ':productId' and Pricebook2Id = ':pricebookId']]></salesforce:salesforce-query>
+			<salesforce:parameters ><![CDATA[#[{
+	productId: attributes.uriParams.productId,
+	pricebookId: attributes.uriParams.pricebookId
+}]]]></salesforce:parameters>
+		</salesforce:query>
+		<ee:transform doc:name="Transform Message" doc:id="bc67b9c1-b544-48b3-b241-38b6c3b48a90" >
+			<ee:message >
+				<ee:set-payload resource = "dwl/getPricebookEntry.dwl" />
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="8b4a8d6a-bcfe-46b7-9f81-11b9e4f3e4b4" message="finished executing getPricebookEntry flow " />
+	</flow>
+</mule>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+    <http:listener-config name="salesforce-order-system-api-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="8081" />
+    </http:listener-config>
+    <apikit:config name="salesforce-order-system-api-config" api="resource::b8cf1f1a-23fa-40f7-b53f-64bac8e0dba3:salesforce-order-system-api:1.0.2:raml:zip:salesforce-order-system-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <flow name="salesforce-order-system-api-main">
+        <http:listener config-ref="salesforce-order-system-api-httpListenerConfig" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="salesforce-order-system-api-config" />
+    </flow>
+    <flow name="salesforce-order-system-api-console">
+        <http:listener config-ref="salesforce-order-system-api-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="salesforce-order-system-api-config" />
+    </flow>
+    <flow name="get:\order\(accountId):salesforce-order-system-api-config">
+        <flow-ref doc:name="Flow Reference" doc:id="1f76b741-2ef5-4ab2-9cd3-0efad8eff5f7" name="getOrderFlow" />
+    </flow>
+    <flow name="post:\account:application\json:salesforce-order-system-api-config">
+        <flow-ref doc:name="Flow Reference" doc:id="a50ce884-d00c-4465-95f1-2612b66b6a4b" name="createAccountFlow" />
+    </flow>
+    <flow name="post:\order:application\json:salesforce-order-system-api-config">
+        <flow-ref doc:name="Flow Reference" doc:id="59f450af-8b67-41e3-9996-034eef3fe306" name="createOrderFlow" />
+    </flow>
+    <flow name="get:\product:salesforce-order-system-api-config">
+        <flow-ref doc:name="Flow Reference" doc:id="a5fa1cb1-1144-435c-86a2-48c91e354840" name="getProductFlow"/>
+    </flow>
+    <flow name="get:\orderItem\(orderId):salesforce-order-system-api-config">
+        <flow-ref doc:name="Flow Reference" doc:id="fd2cd489-59dc-4062-b5ae-3cd0090d03f3" name="getOrderItemFlow"/>
+    </flow>
+    <flow name="get:\pricebookEntry\(productId)\(pricebookId):salesforce-order-system-api-config">
+        <flow-ref doc:name="Flow Reference" doc:id="4912ee96-dda0-47cd-94dd-b2b77df5df43" name="getPricebookEntryFlow"/>
+    </flow>
+</mule>

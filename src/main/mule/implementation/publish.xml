@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:azure-service-bus-messaging="http://www.mulesoft.org/schema/mule/azure-service-bus-messaging" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/azure-service-bus-messaging http://www.mulesoft.org/schema/mule/azure-service-bus-messaging/current/mule-azure-service-bus-messaging.xsd">
+	<flow name="publishFlow" doc:id="ea747c25-8c49-4f56-a31a-70e2d4c1c858" >
+		<logger level="INFO" doc:name="Logger" doc:id="c2f318b4-6c0d-4f08-bb25-65bbd6d7f789" message="sending message to the queue"/>
+		<logger level="INFO" doc:name="payload" doc:id="0b12702f-9e11-41c6-9e3f-f0030bb738c3" message="#[vars.user]"/>
+		<azure-service-bus-messaging:send destinationName="salesforce-user" doc:name="Send" doc:id="f37ce684-eff0-475d-9bde-f1447b7f686a" config-ref="Azure_Service_Bus_Messaging_Connector_Config">
+			<azure-service-bus-messaging:body ><![CDATA[#[vars.user]]]></azure-service-bus-messaging:body>
+		</azure-service-bus-messaging:send>
+		<logger level="INFO" doc:name="Logger" doc:id="d0f60589-6a59-4a66-b6a9-3fe52de618dc" message="message is published to the queue"/>
+	</flow>
+</mule>

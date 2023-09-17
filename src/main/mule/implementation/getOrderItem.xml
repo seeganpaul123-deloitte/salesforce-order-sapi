@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="getOrderItemFlow" doc:id="b6a1127d-b8ff-422e-b1cb-990e62c221ed" >
+		<logger level="INFO" doc:name="Logger" doc:id="2e556d22-4a05-490a-9460-ff7891d9b5d5" message="started executing getOrderItem flow"/>
+		<salesforce:query doc:name="Query" doc:id="54ea7f55-1c0a-4408-a5d0-3fdea5e00e7e" config-ref="Salesforce_Config">
+			<salesforce:salesforce-query ><![CDATA[SELECT Id, OrderId, Product2Id, quantity, UnitPrice FROM OrderItem where orderId = ':orderId']]></salesforce:salesforce-query>
+			<salesforce:parameters ><![CDATA[#[{
+	orderId: attributes.uriParams.orderId
+}]]]></salesforce:parameters>
+		</salesforce:query>
+		<ee:transform doc:name="Transform Message" doc:id="63e1da57-7096-41a8-a4a7-faf2455945bb" >
+			<ee:message >
+				<ee:set-payload resource = "dwl/getOrderItem.dwl" />
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="d1cbdc57-7783-45c9-9931-5f7c4583a120" message="finished executing getOrderItem flow"/>
+	</flow>
+</mule>
